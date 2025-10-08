@@ -41,7 +41,3 @@ def view(path):
 @app.route("/api/view.svg/<path:path>")
 def view_svg(path):
     return view_svg_handler(path)
-
-
-if __name__ == "__main__":
-    app.run(debug=True, port=3000)

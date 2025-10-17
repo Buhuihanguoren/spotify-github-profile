@@ -69,7 +69,7 @@ def make_svg(
     progress_ms,
     duration_ms,
 ):
-    height = 625 if cover_image else 145
+    height = 525 if cover_image else 145
 
     if is_now_playing:
         title_text = "Now playing"

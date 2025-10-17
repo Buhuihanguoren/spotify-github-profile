@@ -69,7 +69,7 @@ def make_svg(
     progress_ms,
     duration_ms,
 ):
-    height = 445 if cover_image else 145
+    height = 625 if cover_image else 145
 
     if is_now_playing:
         title_text = "Now playing"
@@ -282,7 +282,7 @@ def catch_all(path=None):
                 if cover_image:
                     # Resize and convert to Base64
                     img = Image.open(io.BytesIO(cover_image))
-                    img = img.resize((120, 120), Image.LANCZOS)
+                    img = img.resize((300, 300), Image.LANCZOS)
                     
                     buffered = io.BytesIO()
                     img.save(buffered, format="PNG", optimize=True)

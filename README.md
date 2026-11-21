@@ -2,7 +2,11 @@
 
 A small serverless app that shows the track you're playing on Spotify as an SVG card, for a GitHub profile README.
 
-This is my extended version of [kittinan/spotify-github-profile](https://github.com/kittinan/spotify-github-profile). I don't run a public deployment of it any more, so to use it, deploy your own copy (see below).
+This is my extended version of [kittinan/spotify-github-profile](https://github.com/kittinan/spotify-github-profile). My deployment only serves my own card, so to use it, deploy your own copy (see below).
+
+My card, live:
+
+![Spotify](https://spotify-github-profile-ashen5523-three.vercel.app/view?uid=v2kyn2tq6dtav2q5yf4bf9fik)
 
 ## Features
 

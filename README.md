@@ -1,175 +1,62 @@
 # Spotify GitHub Profile Widget
 
-Display your currently playing Spotify track on your GitHub profile! 🎵
+A small serverless app that shows the track you're playing on Spotify as an SVG card, for a GitHub profile README.
 
-![Spotify](https://spotify-github-profile-ashen5523-three.vercel.app/view?uid=v2kyn2tq6dtav2q5yf4bf9fik)
+This is my extended version of [kittinan/spotify-github-profile](https://github.com/kittinan/spotify-github-profile). I don't run a public deployment of it any more, so to use it, deploy your own copy (see below).
 
 ## Features
 
- **Real-time Updates** - Shows what you're currently playing on Spotify  
- **Multiple Themes** - Default, Compact, Natemoo-re, Novatorem, Karaoke, and more  
- **Optimized Performance** - 30-second caching to minimize API calls  
- **Secure** - OAuth flow with environment variables  
- **Error Handling** - Graceful fallbacks for all states  
+- The current track, or the last one played, as an SVG card
+- Themes: default, compact, natemoo-re, novatorem, karaoke, apple, spotify-embed
+- 30-second response cache, so the card doesn't hit the Spotify API on every view
+- OAuth 2.0 login with automatic token refresh
+- All credentials in environment variables, none in the repository
+- A fallback card for every error state
 
-## Quick Start
+## How it works
 
-### 1. Connect Your Spotify Account
+```
+Request -> Vercel function -> cache check -> Spotify API (token from Firebase) -> SVG card
+```
 
-Click the button below to authenticate:
+Built with Python and Flask on Vercel serverless functions, Firebase Firestore for the tokens, and the Spotify Web API.
 
-[<img src="/img/btn-spotify.png" width="200">](https://spotify-github-profile-ashen5523-three.vercel.app/api/login)
+## Run your own copy
 
-After logging in, you'll receive your **User ID (UID)**.
-
-### 2. Add to Your GitHub Profile
-
-Add this to your GitHub profile README:
+1. Fork this repository and import it into [Vercel](https://vercel.com).
+2. Create an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and add the redirect URI `https://<your-project>.vercel.app/api/callback`.
+3. In Vercel, set these environment variables: `SPOTIFY_CLIENT_ID`, `SPOTIFY_SECRET_ID`, `SPOTIFY_REDIRECT_URI`, `BASE_URL` and `FIREBASE` (your Firebase service-account JSON, base64-encoded).
+4. Deploy, open `https://<your-project>.vercel.app/api/login` once, and copy the UID it shows.
+5. Add the card to your profile README:
 
 ```markdown
-![Spotify](https://spotify-github-profile-ashen5523-three.vercel.app/view?uid=YOUR_UID_HERE)
+![Spotify](https://<your-project>.vercel.app/view?uid=YOUR_UID)
 ```
 
-Replace `YOUR_UID_HERE` with your actual UID from step 1.
+Leave the Spotify app in development mode and add only your own account as a user in the dashboard. Then nobody else can log in through your deployment and have their tokens stored in your Firebase.
 
-### Example with Custom Parameters
+Optional parameters: `theme=compact`, `background_color=121212` and the others in `api/view.py`.
 
-```markdown
-![Spotify](https://spotify-github-profile-ashen5523-three.vercel.app/view?uid=YOUR_UID&theme=compact&background_color=121212)
-```
+## Local development
 
-## Prerequisites
-
-- Python 3.12+
-- Spotify Developer Account
-- Firebase Project
-- Vercel Account
-
-## Tech Stack
-
-- **Backend**: Python Flask
-- **Hosting**: Vercel Serverless Functions
-- **Database**: Firebase Firestore
-- **API**: Spotify Web API
-- **Caching**: In-memory with 30s TTL
-
-## Architecture
-
-```
-User Request → Vercel Function → Cache Check → Spotify API → Firebase → SVG Response
-```
-
-### Key Features:
-- **Token Management**: Automatic refresh when expired
-- **Response Caching**: 30-second cache reduces API calls by 95%
-- **Error States**: Graceful fallbacks for all scenarios
-- **Security**: Environment variables for all credentials
-
-## Development
-
-
-### Local Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Buhuihanguoren/spotify-github-profile.git
-   cd spotify-github-profile
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up environment variables**
-   
-   Copy `.env.example` to `.env` and fill in your credentials:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Required variables:
-   ```
-   SPOTIFY_CLIENT_ID=your_spotify_client_id
-   SPOTIFY_SECRET_ID=your_spotify_client_secret
-   BASE_URL=http://localhost:5000
-   SPOTIFY_REDIRECT_URI=http://localhost:5000/api/callback
-   FIREBASE=your_base64_encoded_firebase_key
-   ```
-
-4. **Run locally**
-   ```bash
-   vercel dev
-   ```
-
-   Visit: http://localhost:3000/api/login
-
-### Testing
-
-Run tests with pytest:
 ```bash
-# All tests
-pytest tests/ -v
-
-# With coverage
-pytest tests/ --cov=api --cov-report=html
-
-# Specific test
-pytest tests/test_api_view.py -v
+pip install -r requirements.txt
+cp .env.example .env    # fill in your own credentials
+vercel dev              # then open http://localhost:3000/api/login
 ```
 
-## Deployment
+## Tests
 
-### Deploy to Vercel
+```bash
+pytest tests/ -v
+pytest tests/ --cov=api --cov-report=html
+```
 
-1. **Fork this repository**
+## Known issues
 
-2. **Create a Vercel project**
-   - Import your forked repository
-   - Add environment variables in Vercel dashboard
-
-3. **Configure Spotify App**
-   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-   - Add redirect URI: `https://your-project.vercel.app/api/callback`
-
-4. **Deploy**
-   ```bash
-   vercel --prod
-   ```
-
-
-## Security
-
-- ✅ All credentials stored in environment variables
-- ✅ OAuth 2.0 authentication flow
-- ✅ Token refresh handling
-- ✅ No sensitive data in repository
-- ✅ Secure Firebase integration
-
-## Known Issues
-
-- Local files playing on Spotify may return 404/500 errors (Spotify API limitation)
-
-## Troubleshooting
-
-### "Not authenticated" showing
-- Re-authenticate at `/api/login`
-
-### Widget not updating
-- Make sure you're not in Spotify Private Session
-- Try playing on Desktop app or Web Player
-- Wait 30 seconds for cache to expire
-
-### Login errors
-- Verify Spotify redirect URI is correct
-- Check environment variables in Vercel
+- Local files playing on Spotify can return a 404 or 500 (a Spotify API limitation).
+- Nothing shows during a Spotify private session.
 
 ## Credits
 
-- Original inspiration: [natemoo-re](https://github.com/natemoo-re)
-- Base project: [kittinan/spotify-github-profile](https://github.com/kittinan/spotify-github-profile)
-- Enhanced by: [Buhuihanguoren](https://github.com/Buhuihanguoren)
-
-## Related Projects
-
-- [Apple Music GitHub Profile](https://github.com/rayriffy/apple-music-github-profile)
+Based on [kittinan/spotify-github-profile](https://github.com/kittinan/spotify-github-profile), which was inspired by [natemoo-re](https://github.com/natemoo-re).
